@@ -1,0 +1,47 @@
+{
+  "name": "laravel-bridge/bridge",
+  "description": "LaravelBridge - Administration",
+  "keywords": [
+    "brm",
+    "laravel-bridge"
+  ],
+  "homepage": "https://github.com/brm/laravel-bridge",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Bradley Martin",
+      "email": "bradley.r.martin@me.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "LaravelBridge\\": "app"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "LaravelBridge\\Tests\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit",
+    "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "LaravelBridge\\Providers\\LaravelBridgeServiceProvider"
+      ],
+      "aliases": {
+        "LaravelBridge": "LaravelBridge\\Facades\\LaravelBridgeFacade"
+      }
+    }
+  }
+}
