@@ -1,11 +1,12 @@
 {
-  "name": "laravel-bridge/bridge",
+  "name": "bradley-r-martin/laravel-bridge",
   "description": "LaravelBridge - Administration",
+  "license": "CC-BY-4.0",
   "keywords": [
     "brm",
     "laravel-bridge"
   ],
-  "homepage": "https://github.com/brm/laravel-bridge",
+  "homepage": "https://github.com/bradley-r-martin/laravel-bridge",
   "type": "library",
   "authors": [
     {
