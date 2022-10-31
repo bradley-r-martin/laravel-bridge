@@ -33,7 +33,7 @@ class Thread
                return $func();
             }
         } catch(\Illuminate\Validation\ValidationException $e) {
-            $this->exceptions = array_merge($this->_exceptions, $e->validator->messages()->getMessages());
+            $this->exceptions = array_merge($this->exceptions, $e->validator->messages()->getMessages());
         } catch(\Illuminate\Http\Exceptions\HttpResponseException $e) {
             $this->redirect = $e->getResponse()->getTargetUrl();
         }
