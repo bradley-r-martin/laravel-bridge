@@ -1,0 +1,30 @@
+{
+  "name": "@bradley-r-martin/laravel-bridge",
+  "private": false,
+  "version": "0.5.0",
+  "license": "CC-BY-4.0",
+  "repository": {
+    "url": "https://github.com/bradley-r-martin/laravel-bridge.git"
+  },
+  
+
+  "scripts": {
+    "format:write": "./vendor/bin/pint",
+    "format:check": "./vendor/bin/pint --test",
+    "commit": "cz",
+    "prepare": "husky install"
+  },
+  "dependencies": {
+
+  },
+  "devDependencies": {
+    "commitizen": "^4.2.5",
+    "cz-conventional-changelog": "3.3.0",
+    "husky": "^8.0.1"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  }
+}

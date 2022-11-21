@@ -8,9 +8,13 @@ jobs:
         with:
           fetch-depth: 0
       - uses: wagoid/commitlint-github-action@v5
-  lint:
+  format:
     runs-on: ubuntu-latest
     steps:
-      - uses: php-actions/composer@v6
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 18
+      - run: yarn install
       - run: composer install
-      - run: ./vendor/bin/pint --test
+      - run: yarn format:check
