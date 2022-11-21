@@ -42,18 +42,21 @@ class File implements \JsonSerializable
         return $this;
     }
 
-    public function sync($puragble){
-        if($this->status === 'staged'){
-            if($this->persist(true)){
-                if($puragble){
-                    if($puragble->purge()){
+    public function sync($puragble)
+    {
+        if ($this->status === 'staged') {
+            if ($this->persist(true)) {
+                if ($puragble) {
+                    if ($puragble->purge()) {
                         return true;
                     }
                     $this->stage();
+
                     return false;
                 }
+
                 return true;
-            }else{
+            } else {
                 // failed
                 return false;
             }
@@ -65,6 +68,7 @@ class File implements \JsonSerializable
         if ($this->key) {
             $file = config('bridge.directories.'.$this->status).'/'.$this->uuid;
             $url = Storage::temporaryUrl($file, now()->addMinutes(59));
+
             return  $url;
         }
 
@@ -124,7 +128,7 @@ class File implements \JsonSerializable
 
     public function persist($unmetered = false, $user = null)
     {
-        if($this->uuid && $this->status === 'staged'){
+        if ($this->uuid && $this->status === 'staged') {
             if (! $unmetered) {
                 $user = $user ?? auth()->user();
                 if (Storage::size($this->folder().'/'.$this->uuid) >
@@ -173,6 +177,7 @@ class File implements \JsonSerializable
 
             return false;
         }
+
         return true;
     }
 
@@ -181,6 +186,7 @@ class File implements \JsonSerializable
         try {
             if (Storage::copy($this->folder().'/'.$this->uuid, config('bridge.directories.stage').'/'.$this->uuid)) {
                 $this->status = 'archived';
+
                 return true;
             }
         } catch (\Exception $e) {
