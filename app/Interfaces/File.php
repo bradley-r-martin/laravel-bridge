@@ -42,6 +42,27 @@ class File implements \JsonSerializable
         return $this;
     }
 
+    public function sync($puragble)
+    {
+        if ($this->status === 'staged') {
+            if ($this->persist(true)) {
+                if ($puragble) {
+                    if ($puragble->purge()) {
+                        return true;
+                    }
+                    $this->stage();
+
+                    return false;
+                }
+
+                return true;
+            } else {
+                // failed
+                return false;
+            }
+        }
+    }
+
     public function url()
     {
         if ($this->key) {
@@ -107,60 +128,63 @@ class File implements \JsonSerializable
 
     public function persist($unmetered = false, $user = null)
     {
-        if (! $unmetered) {
-            $user = $user ?? auth()->user();
-            if (Storage::size($this->folder().'/'.$this->uuid) >
-                (optional(optional($user)->storage())['available'] ?? 0)
-            ) {
-                return false;
-            }
-        }
-
-        $exists = Storage::exists($this->folder().'/'.$this->uuid);
-
-        if ($exists) {
-            $move = Storage::move($this->folder().'/'.$this->uuid, config('bridge.directories.persisted').'/'.$this->uuid);
-
-            if ($move) {
-                $this->status = 'persisted';
-
-                // set meta data.
-                $meta = [];
-                $size = Storage::size($this->folder().'/'.$this->uuid);
-                $meta['last_modified'] = Storage::lastModified($this->folder().'/'.$this->uuid);
-                $mime = (new MimeType())->fromFilename($this->name);
-
-                switch ($mime) {
-                    case 'image/gif':
-                    case 'image/jpeg':
-                    case 'image/png':
-                        $meta['dimensions'] = $this->getDimensions();
-                        $meta['orientation'] = $meta['dimensions']['width'] > $meta['dimensions']['height'] ? 'landscape' : 'portrait';
-                        break;
+        if ($this->uuid && $this->status === 'staged') {
+            if (! $unmetered) {
+                $user = $user ?? auth()->user();
+                if (Storage::size($this->folder().'/'.$this->uuid) >
+                    (optional(optional($user)->storage())['available'] ?? 0)
+                ) {
+                    return false;
                 }
+            }
 
-                $this->meta = (object) $meta;
-                $this->size = $size;
-                $this->mime = $mime;
-                $this->extension = pathinfo($this->name, PATHINFO_EXTENSION);
+            $exists = Storage::exists($this->folder().'/'.$this->uuid);
 
-                return true;
+            if ($exists) {
+                $move = Storage::move($this->folder().'/'.$this->uuid, config('bridge.directories.persisted').'/'.$this->uuid);
+                if ($move) {
+                    $this->status = 'persisted';
+
+                    // set meta data.
+                    $meta = [];
+                    $size = Storage::size($this->folder().'/'.$this->uuid);
+                    $meta['last_modified'] = Storage::lastModified($this->folder().'/'.$this->uuid);
+                    $mime = (new MimeType())->fromFilename($this->name);
+
+                    switch ($mime) {
+                        case 'image/gif':
+                        case 'image/jpeg':
+                        case 'image/png':
+                            $meta['dimensions'] = $this->getDimensions();
+                            $meta['orientation'] = $meta['dimensions']['width'] > $meta['dimensions']['height'] ? 'landscape' : 'portrait';
+                            break;
+                    }
+
+                    $this->meta = (object) $meta;
+                    $this->size = $size;
+                    $this->mime = $mime;
+                    $this->extension = pathinfo($this->name, PATHINFO_EXTENSION);
+
+                    return true;
+                } else {
+                    // Couldnt move file
+                    return false;
+                }
             } else {
-                // Couldnt move file
+                // file missing from expected location
                 return false;
             }
-        } else {
-            // file missing from expected location
+
             return false;
         }
 
-        return false;
+        return true;
     }
 
-    public function archive()
+    public function stage()
     {
         try {
-            if (Storage::copy(config('bridge.directories.persisted').'/'.$this->uuid, config('bridge.directories.archived').'/'.$this->uuid)) {
+            if (Storage::copy($this->folder().'/'.$this->uuid, config('bridge.directories.stage').'/'.$this->uuid)) {
                 $this->status = 'archived';
 
                 return true;
