@@ -16,4 +16,5 @@ jobs:
         with:
           node-version: 18
       - run: yarn install
+      - run: composer install
       - run: yarn format:check
