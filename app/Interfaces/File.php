@@ -50,9 +50,8 @@ class File implements \JsonSerializable
                     if ($puragble->purge()) {
                         return true;
                     }
-                    $this->stage();
-
-                    return false;
+                    // New upload but couldnt remove old file.
+                    return true;
                 }
 
                 return true;
@@ -184,8 +183,8 @@ class File implements \JsonSerializable
     public function stage()
     {
         try {
-            if (Storage::copy($this->folder().'/'.$this->uuid, config('bridge.directories.stage').'/'.$this->uuid)) {
-                $this->status = 'archived';
+            if (Storage::copy($this->folder().'/'.$this->uuid, config('bridge.directories.staging').'/'.$this->uuid)) {
+                $this->status = 'staged';
 
                 return true;
             }
