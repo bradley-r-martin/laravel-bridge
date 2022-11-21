@@ -5,7 +5,9 @@ namespace LaravelBridge\Interfaces;
 class Payload
 {
     protected $controller;
+
     protected $uuid;
+
     protected $method = null;
 
     protected $payload = null;
@@ -26,7 +28,6 @@ class Payload
 
         $this->method = optional($payload)->method;
         $this->payload = optional($payload)->payload;
-
     }
 
     // return state
@@ -64,7 +65,6 @@ class Payload
     // return controller;
     public function controller()
     {
-      
         if (class_exists($this->controller)) {
             $controller_name = $this->controller;
 

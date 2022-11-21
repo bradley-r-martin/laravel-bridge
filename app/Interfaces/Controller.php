@@ -2,8 +2,8 @@
 
 namespace LaravelBridge\Interfaces;
 
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class Controller
 {
@@ -105,28 +105,23 @@ class Controller
         $protected = ['_payload', 'rules'];
         $variables = get_object_vars($this);
         $variables = collect($variables)->map(function ($variable, $property) {
-
             if (is_string($variable) || is_bool($variable) || is_int($variable) || is_float($variable)) {
                 return $variable;
             } elseif (is_object($variable)) {
-
                 $type = null;
                 try {
                     $type = optional((new \ReflectionProperty($this, $property))->getType())->getName();
                 } catch(\Exception $e) {
                 }
 
-                if($type === Carbon::class){
-                  return $variable;
+                if ($type === Carbon::class) {
+                    return $variable;
                 }
 
                 $object = collect($variable)->toArray();
 
                 return count($object) > 0 ? $object : null;
             } elseif (is_array($variable)) {
-
-             
-
                 return $variable;
             }
         })->except($protected)->toArray();

@@ -30,7 +30,7 @@ class Thread
     {
         try {
             if ($func) {
-               return $func();
+                return $func();
             }
         } catch(\Illuminate\Validation\ValidationException $e) {
             $this->exceptions = array_merge($this->exceptions, $e->validator->messages()->getMessages());
