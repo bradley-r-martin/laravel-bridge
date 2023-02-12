@@ -40,9 +40,19 @@ class Controller
 
     public function authorise($action, $model = null)
     {
-        if (auth()->user()->cannot($action, $model)) {
-            dd('unauthorised');
-            $this->redirect('/');
+        $guard = $this->guard_in_use();
+        if (! $guard || auth()->guard($guard)->user()->cannot($action, $model)) {
+            abort(301);
+        }
+    }
+
+    protected function guard_in_use()
+    {
+        $guards = array_keys(config('auth.guards'));
+        foreach ($guards as $guard) {
+            if (auth()->guard($guard)->check()) {
+                return $guard;
+            }
         }
     }
 
